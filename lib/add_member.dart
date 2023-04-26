@@ -12,22 +12,26 @@ class addMember extends StatefulWidget {
 }
 
 class _addMemberState extends State<addMember> {
-  DatabaseReference ref = FirebaseDatabase.instance.ref("members");
-  final controller1 = TextEditingController();
+  DatabaseReference ref = FirebaseDatabase.instance
+      .ref("members"); //Gets the database "members" node's adress
+  final controller1 =
+      TextEditingController(); //Creates a text controller for each of the three text zones
   final controller2 = TextEditingController();
   final controller3 = TextEditingController();
-  bool isAdmin = false;
+  bool isAdmin = false; //Initialize the new member's role as non-admin
   int role = 2;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset:
+            false, //Avoid bugs caused by the user's keyboard
         backgroundColor: Colors.purple[900],
         appBar: AppBar(
           backgroundColor: Colors.purple[800],
           leading: IconButton(
+            //Button to go back to the main screen
             onPressed: () async {
               Navigator.pop(context);
             },
@@ -42,6 +46,7 @@ class _addMemberState extends State<addMember> {
               children: <Widget>[
                 const SizedBox(height: 50),
                 TextFormField(
+                  //Text field to enter the new user's name
                   controller: controller1,
                   style: const TextStyle(color: Colors.white),
                   validator: (value) {
@@ -62,6 +67,7 @@ class _addMemberState extends State<addMember> {
                 ),
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to enter the new user's password
                   controller: controller2,
                   style: const TextStyle(color: Colors.white),
                   obscureText: true,
@@ -85,6 +91,7 @@ class _addMemberState extends State<addMember> {
                 ),
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to confirm the new user's password
                   controller: controller3,
                   style: const TextStyle(color: Colors.white),
                   obscureText: true,
@@ -108,6 +115,7 @@ class _addMemberState extends State<addMember> {
                 ),
                 const SizedBox(height: 50),
                 Row(
+                  //Switch button to change the new user's role
                   children: <Widget>[
                     const Text(
                       "Administrator : ",
@@ -135,6 +143,7 @@ class _addMemberState extends State<addMember> {
                 ),
                 SizedBox(height: 50),
                 ElevatedButton(
+                  //Button to validate the creation of the new user
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40.0, vertical: 20.0),
@@ -146,21 +155,27 @@ class _addMemberState extends State<addMember> {
                   ),
                   onPressed: () async {
                     if (controller2.text == controller3.text) {
+                      //Checks if the two passwords are the same
                       List<String> names = [];
                       DataSnapshot users = await ref.get();
                       users.children.forEach((key) {
                         names.add(key.key.toString());
                       });
                       if (names.contains(controller1.text) == false) {
+                        //Checks if the username doesn't already exists
                         await ref.child(controller1.text).set({
+                          //Creates a new member in the database
                           "password": controller2.text,
                           "role": role,
                           "team": widget.team,
                           "bpm": 0,
                           "latitude": 0,
-                          "longitude": 0
+                          "longitude": 0,
+                          "emergency_number": "",
+                          "personnal_number": ""
                         });
                         showDialog(
+                          //Sends the user back to the main page after showing a popup validation message
                           context: context,
                           builder: (context) => AlertDialog(
                               title: Text(
@@ -169,6 +184,7 @@ class _addMemberState extends State<addMember> {
                           Navigator.pop(context);
                         });
                       } else {
+                        //Popup message if the username already exists
                         showDialog(
                           context: context,
                           builder: (context) => const AlertDialog(
@@ -178,6 +194,7 @@ class _addMemberState extends State<addMember> {
                       }
                     } else {
                       showDialog(
+                        //Popup message if the two passwords are not the same
                         context: context,
                         builder: (context) => const AlertDialog(
                             title: Text('Please verify the password.')),

@@ -13,22 +13,24 @@ class RemoveMember extends StatefulWidget {
 }
 
 class _RemoveMemberState extends State<RemoveMember> {
-  DatabaseReference ref = FirebaseDatabase.instance.ref("members");
-  final controller1 = TextEditingController();
+  DatabaseReference ref = FirebaseDatabase.instance
+      .ref("members"); //Gets the database "members" node's adress
+  final controller1 =
+      TextEditingController(); //Creates a text controller for each of the three text zones
   final controller2 = TextEditingController();
   final controller3 = TextEditingController();
-  bool isAdmin = false;
-  int role = 2;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset:
+            false, //Avoid bugs caused by the user's keyboard
         backgroundColor: Colors.purple[900],
         appBar: AppBar(
           backgroundColor: Colors.purple[800],
           leading: IconButton(
+            //Button to go back to the main page
             onPressed: () async {
               Navigator.pop(context);
             },
@@ -43,6 +45,7 @@ class _RemoveMemberState extends State<RemoveMember> {
               children: <Widget>[
                 const SizedBox(height: 50),
                 TextFormField(
+                  //Text field to enter the username of the wanted member
                   controller: controller1,
                   style: const TextStyle(color: Colors.white),
                   validator: (value) {
@@ -63,9 +66,10 @@ class _RemoveMemberState extends State<RemoveMember> {
                 ),
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to get the admin's password
                   controller: controller2,
                   style: const TextStyle(color: Colors.white),
-                  obscureText: true,
+                  obscureText: true, //Hides the given text
                   enableSuggestions: false,
                   autocorrect: false,
                   validator: (value) {
@@ -86,9 +90,10 @@ class _RemoveMemberState extends State<RemoveMember> {
                 ),
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to validate the given password
                   controller: controller3,
                   style: const TextStyle(color: Colors.white),
-                  obscureText: true,
+                  obscureText: true, //Hides the given text
                   enableSuggestions: false,
                   autocorrect: false,
                   validator: (value) {
@@ -109,6 +114,7 @@ class _RemoveMemberState extends State<RemoveMember> {
                 ),
                 const SizedBox(height: 100),
                 ElevatedButton(
+                  //Button to validate the deletion
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40.0, vertical: 20.0),
@@ -121,22 +127,39 @@ class _RemoveMemberState extends State<RemoveMember> {
                   onPressed: () async {
                     if (controller2.text == controller3.text &&
                         controller2.text == widget.password) {
+                      //Checks if both given password are the same as the user's one
                       List<String> names = [];
                       DataSnapshot users = await ref.get();
-                      users.children.forEach((key) {
-                        names.add(key.key.toString());
+                      bool deleted = false;
+
+                      users.children.forEach((key) async {
+                        var team = await ref
+                            .child(key.key.toString())
+                            .child("team")
+                            .get();
+                        print("kloup" + key.key.toString());
+                        if (team.value.toString() == widget.team) {
+                          names.add(key.key.toString());
+                          print(names);
+                        }
+                        if (names.contains(controller1.text) == true) {
+                          //Checks if the given username exists
+                          ref.child(controller1.text).remove();
+                          deleted = true; //Deletes the user
+                          showDialog(
+                            //Sends back to the main page
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                title: Text(
+                                    'You have succesfully removed ${controller1.text}. Click to go back to the main page.')),
+                          ).then((value) async {
+                            Navigator.pop(context);
+                          });
+                        }
                       });
-                      if (names.contains(controller1.text) == true) {
-                        ref.child(controller1.text).remove();
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                              title: Text(
-                                  'You have succesfully removed ${controller1.text}. Click to go back to the main page.')),
-                        ).then((value) async {
-                          Navigator.pop(context);
-                        });
-                      } else {
+                      print(names);
+                      if (deleted == false) {
+                        //Popup message if the user has not been found
                         showDialog(
                           context: context,
                           builder: (context) => const AlertDialog(
@@ -145,6 +168,7 @@ class _RemoveMemberState extends State<RemoveMember> {
                         );
                       }
                     } else {
+                      //Popup if one of the password is wrong
                       showDialog(
                         context: context,
                         builder: (context) => const AlertDialog(

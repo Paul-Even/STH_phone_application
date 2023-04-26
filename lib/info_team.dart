@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class InfosTeam extends StatelessWidget {
   List<Widget> liste = [];
@@ -25,7 +24,7 @@ class InfosTeam extends StatelessWidget {
 }
 
 class teamInfos extends StatefulWidget {
-  List<Widget> liste = [];
+  List<Widget> liste = []; //Recovers the widget list
   teamInfos({super.key, required this.liste});
 
   @override
@@ -39,8 +38,7 @@ class _teamInfosState extends State<teamInfos> {
   }
 
   ListView _buildListViewOfEvents(List<Widget> liste) {
-    //Building the list's view
-    print("Liste length : " + liste.length.toString());
+    //Building the list's view with the given containers
     List<Container> containers = <Container>[];
     containers.add(
       Container(

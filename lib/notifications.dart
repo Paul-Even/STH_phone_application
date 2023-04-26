@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void requestPermission() async {
+  //Request the permission to send notification to the user
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   NotificationSettings settings = await messaging.requestPermission(
@@ -27,6 +27,7 @@ void requestPermission() async {
 }
 
 void sendPushMessage(String token, String body, String title) async {
+  //Send a notification to a given device (token value)
   try {
     await http.post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
@@ -53,5 +54,7 @@ void sendPushMessage(String token, String body, String title) async {
         },
       ),
     );
-  } catch (e) {}
+  } catch (e) {
+    debugPrint("Notification error");
+  }
 }

@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationScreen extends StatefulWidget {
-  double latitude = 0;
+  double latitude = 0; //Recovers the member's latitude and longitude
   double longitude = 0;
   LocationScreen({super.key, required this.latitude, required this.longitude});
 
@@ -15,25 +13,31 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  final Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller =
+      Completer(); //Initialize the map controller
 
   late final Marker marker = Marker(
-      markerId: MarkerId("Position"),
-      position: LatLng(widget.latitude, widget.longitude));
-  static Set<Marker> markers = {};
+      //Creates a marker to see the member's position
+      markerId: const MarkerId("Position"),
+      position: LatLng(
+          widget.latitude, widget.longitude)); //Sets the position of the marker
+  static Set<Marker> markers =
+      {}; //Set the list of markers to display on the map
 
   late CameraPosition initalPostition = CameraPosition(
-      target: LatLng(widget.latitude, widget.longitude), zoom: 14);
+      target: LatLng(widget.latitude, widget.longitude),
+      zoom: 14); //Initialize the initial position of the camera
 
   @override
   Widget build(BuildContext context) {
-    markers.add(marker);
+    markers.add(marker); //Add the created marker to the list
     setState(() {});
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
+            //Button to go back to the main screen
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
             onPressed: () {
               Navigator.pop(context);
@@ -44,6 +48,7 @@ class _LocationScreenState extends State<LocationScreen> {
           backgroundColor: Colors.purple[900],
         ),
         body: GoogleMap(
+          //Creates a Google Map instance as the body of the screen
           initialCameraPosition: initalPostition,
           mapType: MapType.normal,
           onMapCreated: (GoogleMapController controller) {

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart'; //Package used to gzt the user's device token when he gets connected
 
 class ConnectionMenu extends StatefulWidget {
   const ConnectionMenu({super.key});
@@ -12,20 +12,24 @@ class ConnectionMenu extends StatefulWidget {
 }
 
 class _ConnectionMenuState extends State<ConnectionMenu> {
-  DatabaseReference ref = FirebaseDatabase.instance.ref("members");
-  String username = "Paul Even";
-  final controller1 = TextEditingController();
+  DatabaseReference ref = FirebaseDatabase.instance
+      .ref("members"); //Gets the database "members" node's adress
+  String username = "";
+  final controller1 =
+      TextEditingController(); //Creates a text controller for each of the two text zones
   final controller2 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset:
+            false, //Avoid bugs caused by the user's keyboard
         backgroundColor: Colors.purple[900],
         appBar: AppBar(
           backgroundColor: Colors.purple[800],
           leading: IconButton(
+            //Button to go back to the main screen
             onPressed: () async {
               Navigator.pop(context);
             },
@@ -40,6 +44,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
               children: <Widget>[
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to enter the username
                   controller: controller1,
                   style: const TextStyle(color: Colors.white),
                   validator: (value) {
@@ -60,6 +65,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                 ),
                 const SizedBox(height: 100),
                 TextFormField(
+                  //Text field to enter the password
                   controller: controller2,
                   style: const TextStyle(color: Colors.white),
                   obscureText: true,
@@ -83,6 +89,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                 ),
                 const SizedBox(height: 200),
                 ElevatedButton(
+                  //Button to validate the connection
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40.0, vertical: 20.0),
@@ -96,24 +103,29 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                     debugPrint(controller1.text);
                     try {
                       if (controller1.text != "") {
-                        final username =
-                            await ref.child(controller1.text).get();
+                        //Checks if there is a username
+                        final username = await ref
+                            .child(controller1.text)
+                            .get(); //Gets the username from the database
                         if (username.exists) {
-                          debugPrint(username.value.toString());
+                          //Checks if the username exists
                           final password = await ref
                               .child("${controller1.text}/password")
-                              .get();
-                          debugPrint(password.value.toString());
+                              .get(); //Gets the password from the database
                           if (password.value.toString() == controller2.text) {
-                            await FirebaseMessaging.instance
+                            //Checks if the retrieved password corresponds
+                            await FirebaseMessaging
+                                .instance //Gets the device token
                                 .getToken()
                                 .then((token) async {
                               ref.child(controller1.text).update({
+                                //Updates it
                                 "token":
                                     await FirebaseMessaging.instance.getToken()
                               });
                             });
                             showDialog(
+                              //Sends the user back to the main page after a popup validation message
                               context: context,
                               builder: (context) => const AlertDialog(
                                   title: Text(
@@ -133,6 +145,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                                   .get();
 
                               Navigator.pop(context, [
+                                //Gives useful information back to the main page
                                 controller1.text,
                                 team.value.toString(),
                                 status.value.toString(),
@@ -141,6 +154,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                               ]);
                             });
                           } else {
+                            //If the passwords doesn't correspond, shows a popup message
                             showDialog(
                               context: context,
                               builder: (context) => const AlertDialog(
@@ -149,6 +163,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                             );
                           }
                         } else {
+                          //If the username doesn't exist, shows a popup message
                           showDialog(
                             context: context,
                             builder: (context) => const AlertDialog(
@@ -157,6 +172,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                           );
                         }
                       } else {
+                        //If no username was given, shows a popup message
                         showDialog(
                           context: context,
                           builder: (context) => const AlertDialog(
