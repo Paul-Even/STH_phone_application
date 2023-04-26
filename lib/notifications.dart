@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,11 +17,11 @@ void requestPermission() async {
     sound: true,
   );
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User granted permission');
+    debugPrint('User granted permission');
   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    print('User granted provisional permission');
+    debugPrint('User granted provisional permission');
   } else {
-    print('User declined permission');
+    debugPrint('User declined permission');
   }
 }
 

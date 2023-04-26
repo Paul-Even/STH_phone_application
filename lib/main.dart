@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
 import 'package:sth_app/map_screen.dart';
@@ -70,13 +70,11 @@ class _MainPageState extends State<MainPage> {
       try {
         if (notif.payload != null && notif.payload!.isNotEmpty) {
         } else {}
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Notification permission error");
+      }
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("........onMessage...........");
-      print(
-          "onMessage: ${message.notification!.title}/${message.notification?.body}");
-
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
         message.notification!.body.toString(),
         htmlFormatBigText: true,
@@ -139,7 +137,6 @@ class _MainPageState extends State<MainPage> {
             token = snapshot.value.toString();
             sendPushMessage(token, "$username has an abnormal heartrate.",
                 "Emergency alert!");
-            print("Alerte envoyée par $username");
           }
         }
       });
@@ -191,8 +188,7 @@ class _MainPageState extends State<MainPage> {
       //Future.delayed(const Duration(milliseconds: 100));
       if (team.value.toString() == teamname &&
           members.contains(key.key.toString()) == false) {
-        final dataRole = await ref.child(key.key.toString() + "/role").get();
-        String role = "";
+        final dataRole = await ref.child("${key.key}/role").get();
         if (dataRole.value.toString() == "1") {
           //Checks every members' role
           setState(() {
@@ -263,18 +259,20 @@ class _MainPageState extends State<MainPage> {
                         children: <Widget>[
                           Text(
                             "Name : $name", //Displays the member's name
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
                               color: Colors.white,
                             ),
                           ),
                           Text(
                             "Role : ${role.toString()}", //Displays the member's role
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                           Text(
                             "BPM : ${bpm.toString()}", //Displays the member's BPM
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ],
                       ),
@@ -344,7 +342,7 @@ class _MainPageState extends State<MainPage> {
     for (int i = 0; i < members.length; i++) {
       //Create a container for every member in the list
       String role = await getRole(ref, "${members[i]}/role");
-      print("Members length " + members.length.toString());
+      debugPrint("Members length ${members.length}");
 
       int bpm = await getBPM(ref, "${members[i]}/bpm");
 
