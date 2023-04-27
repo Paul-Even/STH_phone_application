@@ -123,18 +123,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _listenBPM() {
-    print("atchoum");
     //Updates the BPM value shown when it is modified
     if (connected == true) {
       //Listens only if the user is connected
-      final query = ref.child(username).child("bpm");
-      print("Adding onValue listener for $username/bpm");
-      query.onValue.listen((event) async {
-        print("bpm changed");
-        print("Value: ${event.snapshot.value.toString()}");
+      ref.child(username).child("bpm").onValue.listen((event) async {
         int BPM = int.parse(event.snapshot.value
             .toString()); //Stores the value recovered from the database
-        print("Parsed value: $BPM");
         setState(() {
           bpm = BPM;
         });

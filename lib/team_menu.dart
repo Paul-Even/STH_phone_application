@@ -16,7 +16,15 @@ class teamInfos extends StatefulWidget {
 class _teamInfosState extends State<teamInfos> {
   @override
   void initState() {
+    onChanged();
     super.initState();
+  }
+
+  void onChanged() {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("members");
+    ref.onValue.listen((event) async {
+      setState(() {});
+    });
   }
 
   ListView _buildListViewOfEvents() {
@@ -207,13 +215,12 @@ class _teamInfosState extends State<teamInfos> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.purple[800],
-            title: Row(children: const <Widget>[
-              Text(
-                'Team Members',
-                textAlign: TextAlign.center,
-              ),
-            ])),
+          backgroundColor: Colors.purple[800],
+          title: Text(
+            'Team Members',
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: Colors.purple[900],
         body: Column(
           children: <Widget>[
