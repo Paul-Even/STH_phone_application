@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables, avoid_unnecessary_containers
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sth_app/map_screen.dart';
 
@@ -13,7 +15,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart'; //Package used to make calls
 
 import 'connection_menu.dart'; //Importing the screens created in other files
-import 'info_team.dart';
+import 'team_menu.dart';
 import 'personnal_infos_modify.dart';
 import 'add_member.dart';
 import 'remove_member.dart';
@@ -101,6 +103,7 @@ class _MainPageState extends State<MainPage> {
   DatabaseReference ref = FirebaseDatabase.instance
       .ref("members"); //Gets the database "members" node's adress
 
+  StreamSubscription<DatabaseEvent>? _databaseSubscription = null;
   String username = "Not connected"; //Value to display the user's name
   String teamname = ""; //Value to display the user's team's name
   String emergency_number = ""; //The number to call in emergency
@@ -108,29 +111,56 @@ class _MainPageState extends State<MainPage> {
   int status =
       2; //Value to check if the user is a team administrator or not (1 if admin)
   List<String> members = []; //Array to store all the members in the database
+  int bpm = 0;
   @override
   void initState() {
-    super.initState();
+    print("initState");
     _listenBPM(); //Updates the BPM value when it is modified
+    super.initState();
+
     requestPermission(); //Asking the user for the permission to send notifications
     initInfo(); //Function to show a notification when one is received
   }
 
   void _listenBPM() {
+    print("atchoum");
     //Updates the BPM value shown when it is modified
     if (connected == true) {
       //Listens only if the user is connected
-      ref.child(username).child("bpm").onValue.listen((event) async {
-        int bpm = int.parse(event.snapshot.value
+      final query = ref.child(username).child("bpm");
+      print("Adding onValue listener for $username/bpm");
+      query.onValue.listen((event) async {
+        print("bpm changed");
+        print("Value: ${event.snapshot.value.toString()}");
+        int BPM = int.parse(event.snapshot.value
             .toString()); //Stores the value recovered from the database
+        print("Parsed value: $BPM");
+        setState(() {
+          bpm = BPM;
+        });
         if (bpm < 50 || bpm > 160) {
           //Checks if the BPM is normal or if there's an emergency, in the second case, sends an automatic notification to the admins
           final usernames =
               await ref.get(); //Here getting the list of members' names
-
+          List<String> admins = [];
           String token = ""; //Stores the token
-          List<String> admins = await getAdmins(
-              usernames); //Gets the admins in the list of members
+          for (DataSnapshot key in usernames.children) {
+            var team;
+            await ref
+                .child("/${key.key.toString()}")
+                .child("/team")
+                .get()
+                .then((value) => team = value);
+            //Future.delayed(const Duration(milliseconds: 100));
+            if (team.value.toString() == teamname &&
+                members.contains(key.key.toString()) == false) {
+              final dataRole = await ref.child("${key.key}/role").get();
+              if (dataRole.value.toString() == "1") {
+                //Checks every members' role
+                members.add(key.key.toString());
+              }
+            }
+          }
           for (String admin in admins) {
             //Sends a notification to every admin in the list
             DataSnapshot snapshot = await ref.child(admin).child("token").get();
@@ -141,6 +171,7 @@ class _MainPageState extends State<MainPage> {
         }
       });
     }
+    //return bpm;
   }
 
   //@override
@@ -149,222 +180,8 @@ class _MainPageState extends State<MainPage> {
 
   int _selectedIndex = 1;
 
-  int bpm = 0; //Value to display the user's BPM
-
-  Future<List<String>> getMembers(DataSnapshot username) async {
-    //Get every member from the same team as the user
-    username.children.forEach((key) async {
-      var team;
-      await ref
-          .child("/${key.key.toString()}")
-          .child("/team")
-          .get()
-          .then((value) => team = value);
-      //Future.delayed(const Duration(milliseconds: 100));
-      if (team.value.toString() == teamname &&
-          members.contains(key.key.toString()) == false) {
-        setState(() {
-          members.add(key.key.toString());
-        });
-      }
-    });
-    members.sort(
-      //Classes members by alphabetical order
-      (a, b) =>
-          a.toString().toLowerCase().compareTo(b.toString().toLowerCase()),
-    );
-    return members;
-  }
-
-  Future<List<String>> getAdmins(DataSnapshot username) async {
-    //Get every admin from the same team as the user
-    username.children.forEach((key) async {
-      var team;
-      await ref
-          .child("/${key.key.toString()}")
-          .child("/team")
-          .get()
-          .then((value) => team = value);
-      //Future.delayed(const Duration(milliseconds: 100));
-      if (team.value.toString() == teamname &&
-          members.contains(key.key.toString()) == false) {
-        final dataRole = await ref.child("${key.key}/role").get();
-        if (dataRole.value.toString() == "1") {
-          //Checks every members' role
-          setState(() {
-            members.add(key.key.toString());
-          });
-        }
-      }
-    });
-    return members;
-  }
-
-  Future<String> getRole(DatabaseReference ref, String path) async {
-    //Gets a user's role
-    final dataRole = await ref.child(path).get();
-    String role = "";
-    if (int.parse(dataRole.value.toString()) == 1) {
-      role = "Administrator";
-    } else {
-      role = "Member";
-    }
-    return role;
-  }
-
-  Future<int> getBPM(DatabaseReference ref, String path) async {
-    //Gets a user's BPM
-    final dataBPM = await ref.child(path).get();
-    return int.parse(dataBPM.value.toString());
-  }
-
-  Future<double> getLatitude(DatabaseReference ref, String path) async {
-    //Gets a user's latitude
-    final dataLat = await ref.child(path).get();
-    return double.parse(dataLat.value.toString());
-  }
-
-  Future<double> getLongitude(DatabaseReference ref, String path) async {
-    //Gets a user's latitude
-    final dataLon = await ref.child(path).get();
-    return double.parse(dataLon.value.toString());
-  }
-
-  Future<String> getPhone(DatabaseReference ref, String path) async {
-    //Gets a user's personnal phone number
-    final dataPhone = await ref.child(path).get();
-    return dataPhone.value.toString();
-  }
-
-  Future<List<Container>> getContainers(
-      //Creates the list of widgets needed to display the information of one member
-      List<Container> containers,
-      String name,
-      String role,
-      int bpm,
-      String phone,
-      double latitude,
-      double longitude) async {
-    containers.add(
-      Container(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Name : $name", //Displays the member's name
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            "Role : ${role.toString()}", //Displays the member's role
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
-                          Text(
-                            "BPM : ${bpm.toString()}", //Displays the member's BPM
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                          child: Align(
-                        alignment: Alignment.topRight,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            IconButton(
-                                //Displaying a button to call the member
-                                iconSize: 50,
-                                color: Colors.white,
-                                onPressed: () async {
-                                  await FlutterPhoneDirectCaller.callNumber(
-                                      phone);
-                                },
-                                icon: const Icon(Icons.phone)),
-                            IconButton(
-                                //Displaying a button to see the member's location
-                                iconSize: 50,
-                                color: Colors.white,
-                                onPressed: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LocationScreen(
-                                              latitude: latitude,
-                                              longitude: longitude,
-                                            )),
-                                  );
-                                },
-                                icon: const Icon(Icons.location_pin)),
-                          ],
-                        ),
-                      )),
-                    ],
-                  ),
-                  const Divider(
-                    height: 30,
-                    thickness: 5,
-                    indent: 0,
-                    endIndent: 0,
-                    color: Colors.white,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-    return containers;
-  }
-
-  Future<List<Widget>> buildListViewOfEvents() async {
-    //Creates the list of widgets needed to display the information of every member
-    //Building the list's view
-
-    final username =
-        await ref.get(); //Getting the list of every person in the database
-    List<Container> containers = <Container>[];
-
-    members = await getMembers(
-        username); //Getting the list of every member of the user's team
-
-    for (int i = 0; i < members.length; i++) {
-      //Create a container for every member in the list
-      String role = await getRole(ref, "${members[i]}/role");
-      debugPrint("Members length ${members.length}");
-
-      int bpm = await getBPM(ref, "${members[i]}/bpm");
-
-      String phone = await getPhone(ref, "${members[i]}/personnal_number");
-      //Future.delayed(const Duration(milliseconds: 100));
-
-      double latitude = await getLatitude(ref, "${members[i]}/latitude");
-
-      double longitude = await getLatitude(ref, "${members[i]}/longitude");
-      containers = await getContainers(
-          containers, members[i], role, bpm, phone, latitude, longitude);
-    }
-
-    return <Widget>[
-      //Put all the containers in one column
-      Column(),
-      ...containers,
-    ];
-  }
-
   void _onItemTapped(int index) async {
-    //Defines the action made bu the bottom bar's buttons
+    //Defines the action made by the bottom bar's buttons
     try {
       if (index == 0) {
         //If the user clicks on the left button
@@ -378,9 +195,10 @@ class _MainPageState extends State<MainPage> {
           username = result[0];
           teamname = result[1];
           status = int.parse(result[2]);
-          bpm = int.parse(result[3]);
+          //bpm = int.parse(result[3]);
           emergency_number = result[4];
           connected = true;
+          initState();
         }
       }
       if (index == 1) {
@@ -392,14 +210,35 @@ class _MainPageState extends State<MainPage> {
       }
       if (index == 2) {
         //If the user clicks on the right button
+        print(connected);
         if (connected == true) {
           //Checks if the user is connected
           final usernames =
               await ref.get(); //Getting the list of members' names
-          usernames.children.forEach((key) {});
+          List<String> admins = [];
           String token = "";
-          List<String> admins = await getAdmins(usernames);
+
+          for (DataSnapshot key in usernames.children) {
+            var team;
+            await ref
+                .child("/${key.key.toString()}")
+                .child("/team")
+                .get()
+                .then((value) => team = value);
+            if (team.value.toString() == teamname &&
+                members.contains(key.key.toString()) == false) {
+              final dataRole = await ref.child("${key.key}/role").get();
+              if (dataRole.value.toString() == "1") {
+                //Checks every members' role
+                setState(() {
+                  admins.add(key.key.toString());
+                });
+              }
+            }
+          }
+          print(admins);
           for (String admin in admins) {
+            print("loop");
             //Sends a notification to every admin on the member's team
             DataSnapshot snapshot = await ref.child(admin).child("token").get();
             token = snapshot.value.toString();
@@ -480,17 +319,12 @@ class _MainPageState extends State<MainPage> {
                     alignment: Alignment.topLeft,
                     textStyle: const TextStyle(fontSize: 35),
                   ),
-                  onPressed: () async {
-                    List<Widget> liste = [];
-                    await buildListViewOfEvents()
-                        .then((value) => liste = value);
-                    if (liste.length > 1) {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InfosTeam(liste: liste)),
-                      );
-                    }
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const teamInfos()),
+                    );
                   },
                   child: const Text(
                     'Team Members',
@@ -545,7 +379,7 @@ class _MainPageState extends State<MainPage> {
                         //Retrieves the changed values
                         username = results[0];
                         teamname = results[1];
-                        bpm = int.parse(results[2]);
+                        //bpm = int.parse(results[2]);
                         emergency_number = results[3];
                       }
                     }
