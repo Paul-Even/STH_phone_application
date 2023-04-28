@@ -189,7 +189,7 @@ class _MainPageState extends State<MainPage> {
           username = result[0];
           teamname = result[1];
           status = int.parse(result[2]);
-          //bpm = int.parse(result[3]);
+          bpm = int.parse(result[3]);
           emergency_number = result[4];
           connected = true;
           initState();
@@ -204,7 +204,6 @@ class _MainPageState extends State<MainPage> {
       }
       if (index == 2) {
         //If the user clicks on the right button
-        print(connected);
         if (connected == true) {
           //Checks if the user is connected
           final usernames =
@@ -218,9 +217,8 @@ class _MainPageState extends State<MainPage> {
                 .child("/${key.key.toString()}")
                 .child("/team")
                 .get()
-                .then((value) => team = value);
-            if (team.value.toString() == teamname &&
-                members.contains(key.key.toString()) == false) {
+                .then((value) => team = value.value.toString());
+            if (team == teamname) {
               final dataRole = await ref.child("${key.key}/role").get();
               if (dataRole.value.toString() == "1") {
                 //Checks every members' role
