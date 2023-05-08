@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:sth_app/map_screen.dart';
 
 import 'firebase_options.dart'; //Packages used for the database installation
 import 'package:firebase_core/firebase_core.dart';
@@ -20,6 +19,7 @@ import 'personnal_infos_modify.dart';
 import 'add_member.dart';
 import 'remove_member.dart';
 import 'notifications.dart';
+import 'shirt_connection.dart';
 
 void main() async {
   WidgetsFlutterBinding
@@ -44,14 +44,25 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           //primarySwatch: Colors.blue,
           ),
-      home: const MainPage(),
+      home: const ConnectionMenu(),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
   //This creates the home page widget
-  const MainPage({super.key});
+  String username = "";
+  String teamname = "";
+  int role = 2;
+  String bpm = "";
+  String emergency_number = "";
+  MainPage(
+      {super.key,
+      required this.username,
+      required this.teamname,
+      required this.role,
+      required this.bpm,
+      required this.emergency_number});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -102,20 +113,29 @@ class _MainPageState extends State<MainPage> {
 
   DatabaseReference ref = FirebaseDatabase.instance
       .ref("members"); //Gets the database "members" node's adress
+  DatabaseReference ref_shirts = FirebaseDatabase.instance.ref("shirt");
 
-  StreamSubscription<DatabaseEvent>? _databaseSubscription = null;
-  String username = "Not connected"; //Value to display the user's name
+  String username = ""; //Value to display the user's name
   String teamname = ""; //Value to display the user's team's name
+  String shirtname = "Shirt not connected";
   String emergency_number = ""; //The number to call in emergency
-  bool connected = false; //Boolean to check if the user is connected or not
+  bool connected = true; //Boolean to check if the user is connected or not
+  bool shirt_co = false;
   int status =
       2; //Value to check if the user is a team administrator or not (1 if admin)
   List<String> members = []; //Array to store all the members in the database
   int bpm = 0;
   @override
   void initState() {
-    print("initState");
+    username = widget.username;
+    teamname = widget.teamname;
+    emergency_number = widget.emergency_number;
+    status = widget.role;
+    bpm = int.parse(widget.bpm);
+
     _listenBPM(); //Updates the BPM value when it is modified
+    _listenLatitude();
+    _listenLongitude();
     super.initState();
 
     requestPermission(); //Asking the user for the permission to send notifications
@@ -123,6 +143,19 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _listenBPM() {
+    if (shirt_co == true) {
+      ref_shirts.child(shirtname).child("bpm").onValue.listen((event) async {
+        int BPM = int.parse(event.snapshot.value.toString());
+        ref.child(username).child("bpm").set(BPM);
+
+        setState(() {
+          bpm = BPM;
+        });
+      });
+    }
+  }
+
+  /*void _listenBPM() {
     //Updates the BPM value shown when it is modified
     if (connected == true) {
       //Listens only if the user is connected
@@ -167,6 +200,32 @@ class _MainPageState extends State<MainPage> {
     }
     //return bpm;
   }
+*/
+  void _listenLatitude() {
+    if (shirt_co == true) {
+      ref_shirts
+          .child(shirtname)
+          .child("Latitude")
+          .onValue
+          .listen((event) async {
+        double latitude = double.parse(event.snapshot.value.toString());
+        ref.child(username).child("latitude").set(latitude);
+      });
+    }
+  }
+
+  void _listenLongitude() {
+    if (shirt_co == true) {
+      ref_shirts
+          .child(shirtname)
+          .child("Longitude")
+          .onValue
+          .listen((event) async {
+        double longitude = double.parse(event.snapshot.value.toString());
+        ref.child(username).child("longitude").set(longitude);
+      });
+    }
+  }
 
   //@override
   final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -179,19 +238,13 @@ class _MainPageState extends State<MainPage> {
     try {
       if (index == 0) {
         //If the user clicks on the left button
-        final result = await Navigator.push(
-          //Opens the connection menu
-          context,
-          MaterialPageRoute(builder: (context) => const ConnectionMenu()),
-        );
-        if (result != null) {
-          //If the user connected, retrieves the useful values
-          username = result[0];
-          teamname = result[1];
-          status = int.parse(result[2]);
-          bpm = int.parse(result[3]);
-          emergency_number = result[4];
-          connected = true;
+        var results = await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ShirtMenu(team: teamname)));
+        if (results != null) {
+          setState(() {
+            shirtname = results[0];
+            shirt_co = true;
+          });
           initState();
         }
       }
@@ -228,9 +281,7 @@ class _MainPageState extends State<MainPage> {
               }
             }
           }
-          print(admins);
           for (String admin in admins) {
-            print("loop");
             //Sends a notification to every admin on the member's team
             DataSnapshot snapshot = await ref.child(admin).child("token").get();
             token = snapshot.value.toString();
@@ -492,6 +543,14 @@ class _MainPageState extends State<MainPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
+                  Text(
+                    shirtname, //Displays the user's team name
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
                   const SizedBox(height: 150),
                   Text(
                     bpm.toString(), //Displays user's BPM value
@@ -500,13 +559,15 @@ class _MainPageState extends State<MainPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
-                  const Text(
-                    "BPM",
-                    style: TextStyle(
-                        fontSize: 60,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
+                  const Expanded(
+                    child: Text(
+                      "BPM",
+                      style: TextStyle(
+                          fontSize: 60,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -518,8 +579,8 @@ class _MainPageState extends State<MainPage> {
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 //Button to connect
-                icon: Icon(Icons.person),
-                label: 'Connect',
+                icon: Icon(Icons.checkroom),
+                label: 'Shirt selection',
               ),
               BottomNavigationBarItem(
                 //Button to make an emergency call

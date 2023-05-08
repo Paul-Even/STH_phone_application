@@ -5,20 +5,26 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; //Package used to gzt the user's device token when he gets connected
 import 'main.dart';
 
-class ConnectionMenu extends StatefulWidget {
-  const ConnectionMenu({super.key});
+class ShirtMenu extends StatefulWidget {
+  String team = "";
+  ShirtMenu({super.key, required this.team});
 
   @override
-  State<ConnectionMenu> createState() => _ConnectionMenuState();
+  State<ShirtMenu> createState() => _ShirtMenuState();
 }
 
-class _ConnectionMenuState extends State<ConnectionMenu> {
+class _ShirtMenuState extends State<ShirtMenu> {
   DatabaseReference ref = FirebaseDatabase.instance
-      .ref("members"); //Gets the database "members" node's adress
-  String username = "";
+      .ref("shirt"); //Gets the database "members" node's adress
+  String team = "";
   final controller1 =
       TextEditingController(); //Creates a text controller for each of the two text zones
-  final controller2 = TextEditingController();
+
+  void initState() {
+    team = widget.team;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,14 +35,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
         backgroundColor: Colors.purple[900],
         appBar: AppBar(
           backgroundColor: Colors.purple[800],
-          /*leading: IconButton(
-            //Button to go back to the main screen
-            onPressed: () async {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          ),*/
-          title: const Text("Connection menu"),
+          title: const Text("Shirt selection"),
           centerTitle: true,
         ),
         body: Center(
@@ -58,31 +57,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                         borderSide: BorderSide(color: Colors.white)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white)),
-                    labelText: 'Enter your name.',
-                    labelStyle: TextStyle(
-                        color: Colors.white, decorationColor: Colors.white)),
-                cursorColor: Colors.white,
-              ),
-              const SizedBox(height: 100),
-              TextFormField(
-                //Text field to enter the password
-                controller: controller2,
-                style: const TextStyle(color: Colors.white),
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text.';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white)),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white)),
-                    labelText: 'Enter your password.',
+                    labelText: 'Enter your shirt\'s name.',
                     labelStyle: TextStyle(
                         color: Colors.white, decorationColor: Colors.white)),
                 cursorColor: Colors.white,
@@ -109,21 +84,12 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                           .get(); //Gets the username from the database
                       if (username.exists) {
                         //Checks if the username exists
-                        final password = await ref
-                            .child("${controller1.text}/password")
+                        final teamname = await ref
+                            .child("${controller1.text}/team")
                             .get(); //Gets the password from the database
-                        if (password.value.toString() == controller2.text) {
-                          //Checks if the retrieved password corresponds
-                          await FirebaseMessaging
-                              .instance //Gets the device token
-                              .getToken()
-                              .then((token) async {
-                            ref.child(controller1.text).update({
-                              //Updates it
-                              "token":
-                                  await FirebaseMessaging.instance.getToken()
-                            });
-                          });
+
+                        //Checks if the retrieved password corresponds
+                        if (teamname.value.toString() == team) {
                           showDialog(
                             //Sends the user back to the main page after a popup validation message
                             context: context,
@@ -131,46 +97,17 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                                 title: Text(
                                     'You have succesfully connected to your account. Click to go back to the main page.')),
                           ).then((value) async {
-                            final team = await ref
-                                .child("${controller1.text}/team")
-                                .get();
-                            final status = await ref
-                                .child("${controller1.text}/role")
-                                .get();
-                            final bpm = await ref
-                                .child("${controller1.text}/bpm")
-                                .get();
-                            final emergency = await ref
-                                .child("${controller1.text}/emergency_number")
-                                .get();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MainPage(
-                                          username: controller1.text,
-                                          teamname: team.value.toString(),
-                                          role: int.parse(
-                                              status.value.toString()),
-                                          bpm: bpm.value.toString(),
-                                          emergency_number:
-                                              emergency.value.toString(),
-                                        )));
-                            /*Navigator.pop(context, [
+                            Navigator.pop(context, [
                               //Gives useful information back to the main page
-                              controller1.text,
-                              team.value.toString(),
-                              status.value.toString(),
-                              bpm.value.toString(),
-                              emergency.value.toString()
-                            ]);*/
+                              controller1.text
+                            ]);
                           });
                         } else {
-                          //If the passwords doesn't correspond, shows a popup message
                           showDialog(
                             context: context,
                             builder: (context) => const AlertDialog(
                                 title: Text(
-                                    'You might have entered a wrong name or password. Please try again.')),
+                                    'You might have entered a wrong name. Please try again.')),
                           );
                         }
                       } else {
@@ -179,7 +116,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                           context: context,
                           builder: (context) => const AlertDialog(
                               title: Text(
-                                  'You might have entered a wrong name or password. Please try again.')),
+                                  'You might have entered a wrong name. Please try again.')),
                         );
                       }
                     } else {
@@ -188,7 +125,7 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                         context: context,
                         builder: (context) => const AlertDialog(
                             title: Text(
-                                'You might have entered a wrong name or password. Please try again.')),
+                                'You might have entered a wrong name. Please try again.')),
                       );
                     }
                   } catch (e) {
