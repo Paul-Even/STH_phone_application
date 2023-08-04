@@ -250,10 +250,22 @@ class _MainPageState extends State<MainPage> {
       }
       if (index == 1) {
         //If the user clicks on the middle button
-        if (emergency_number != "") {
+        /*if (emergency_number != "") {
           await FlutterPhoneDirectCaller.callNumber(
               emergency_number); //Calls the defined emergency number, if one is defined
-        }
+        }*/
+
+        await ref.child("Team Member 9").set({
+          //Creates the same one, with a different name
+          "password": "root",
+          "role": 1,
+          "team": "Smart Textiles Hub",
+          "bpm": 100,
+          "latitude": 3,
+          "longitude": 2,
+          "personnal_number": "",
+          "emergency_number": ""
+        });
       }
       if (index == 2) {
         //If the user clicks on the right button

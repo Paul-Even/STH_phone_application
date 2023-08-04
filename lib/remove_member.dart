@@ -36,7 +36,7 @@ class _RemoveMemberState extends State<RemoveMember> {
             },
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
           ),
-          title: const Text("Add a member"),
+          title: const Text("Remove a member"),
           centerTitle: true,
         ),
         body: Center(

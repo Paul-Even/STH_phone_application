@@ -172,6 +172,7 @@ class _teamInfosState extends State<teamInfos> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 LocationScreen(
+                                                  member: key.key.toString(),
                                                   latitude: latitude,
                                                   longitude: longitude,
                                                 )),
@@ -222,22 +223,21 @@ class _teamInfosState extends State<teamInfos> {
           centerTitle: true,
         ),
         backgroundColor: Colors.purple[900],
-        body: Column(
-          children: <Widget>[
-            FutureBuilder(
+        body: Container(
+            child: FutureBuilder(
                 future: getContainers("Smart Textiles Hub"),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Widget>> snapshot) {
                   if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                     print(snapshot.data);
-                    return Column(
-                      children: snapshot.data!,
+                    return ListView(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      children: <Widget>[...snapshot.data!],
                     );
                   } else {
                     return Column();
                   }
-                })
-          ],
-        ),
+                })),
       );
 }

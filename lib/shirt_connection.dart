@@ -35,6 +35,14 @@ class _ShirtMenuState extends State<ShirtMenu> {
         backgroundColor: Colors.purple[900],
         appBar: AppBar(
           backgroundColor: Colors.purple[800],
+          leading: IconButton(
+            //Button to go back to the main screen
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {});
+            },
+          ),
           title: const Text("Shirt selection"),
           centerTitle: true,
         ),

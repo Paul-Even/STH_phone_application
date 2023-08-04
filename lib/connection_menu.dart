@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart'; //Package used to gzt the user's device token when he gets connected
+import 'package:firebase_messaging/firebase_messaging.dart'; //Package used to get the user's device token when he gets connected
 import 'main.dart';
 
 class ConnectionMenu extends StatefulWidget {

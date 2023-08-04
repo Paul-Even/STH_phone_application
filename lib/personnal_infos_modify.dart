@@ -237,20 +237,31 @@ class _PersonnalInfoState extends State<PersonnalInfo> {
                             .get();
                         ref.child(widget.username).remove(); //Deletes the user
                         widget.username = controllerUsername.text;
-                        await ref.set({
+                        await ref.child(controllerUsername.text).set({
                           //Creates the same one, with a different name
-                          controllerUsername.text: {
-                            "password": widget.password,
-                            "role": int.parse(status.value.toString()),
-                            "team": team.value.toString(),
-                            "bpm": int.parse(bpm.value.toString()),
-                            "latitude": double.parse(latitude.value.toString()),
-                            "longitude":
-                                double.parse(longitude.value.toString()),
-                            "personnal_number": phone.value.toString(),
-                            "emergency_number": emergency.value.toString()
-                          }
+                          "password": widget.password,
+                          "role": int.parse(status.value.toString()),
+                          "team": team.value.toString(),
+                          "bpm": int.parse(bpm.value.toString()),
+                          "latitude": double.parse(latitude.value.toString()),
+                          "longitude": double.parse(longitude.value.toString()),
+                          "personnal_number": phone.value.toString(),
+                          "emergency_number": emergency.value.toString()
                         });
+
+                        /*await ref.set({
+                          //Creates the same one, with a different name
+                          "Bidule": {
+                            "password": "password",
+                            "role": 2,
+                            "team": "Smart Textiles Hub",
+                            "bpm": 100,
+                            "latitude": 3,
+                            "longitude": 2,
+                            "personnal_number": "",
+                            "emergency_number": ""
+                          }
+                        });*/
                       }
                       if (widget.password != controllerPassword1.text) {
                         //Checks if the password has been modified

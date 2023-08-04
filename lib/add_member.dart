@@ -115,7 +115,9 @@ class _addMemberState extends State<addMember> {
               const SizedBox(height: 50),
               Row(
                 //Switch button to change the new user's role
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  //const SizedBox(width: 50),
                   const Text(
                     "Administrator : ",
                     style: TextStyle(fontSize: 30, color: Colors.white),
