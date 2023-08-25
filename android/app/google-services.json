@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "221023005778",
-    "firebase_url": "https://sth-app-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "sth-app",
-    "storage_bucket": "sth-app.appspot.com"
+    "project_number": "226366120654",
+    "firebase_url": "https://hera-shirt-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "hera-shirt",
+    "storage_bucket": "hera-shirt.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:221023005778:android:061e6826dd77976735438b",
+        "mobilesdk_app_id": "1:226366120654:android:8a3cca5ccc3ee51c5fa69f",
         "android_client_info": {
           "package_name": "com.example.sth_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "221023005778-nhi0dpc9pv2gh89i6vvh41ossvinj8da.apps.googleusercontent.com",
+          "client_id": "226366120654-na5rm8lqafv8luv2nrv8ri832adm7ja6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDjgf_Ts_qXNBN6w-7bJZPGYbAF9X7wG8"
+          "current_key": "AIzaSyB9YneQJmxYveKCe8tZeLjlZhd6MkNW5Sk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "221023005778-nhi0dpc9pv2gh89i6vvh41ossvinj8da.apps.googleusercontent.com",
+              "client_id": "226366120654-na5rm8lqafv8luv2nrv8ri832adm7ja6.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "221023005778-j1kcsrst9v9unh7qda0t1n5kc2uotuna.apps.googleusercontent.com",
+              "client_id": "226366120654-hun3a6f7u9csaab39qm4361rbqbi4kb6.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.sthApp"
+                "bundle_id": "com.example.sth2"
               }
             }
           ]

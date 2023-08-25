@@ -27,13 +27,14 @@ void requestPermission() async {
 
 void sendPushMessage(String token, String body, String title) async {
   //Send a notification to a given device (token value)
+  debugPrint("ok bg");
   try {
     await http.post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization':
-            'key=AAAAM3X_bFI:APA91bFBMRZfxTi45zIc5pxsparwXFeGk61OjBaiM3g118vZGqdkBrwS23sjGPl6mSljcin07yZStwhEXWf-nY_YB12p5O0WGspXNPT4ppoJjA7kcKgSMmL5gx7unLrs4awuYGAyNuxN',
+            'key=AAAANLR44s4:APA91bHj8bkU9vTkXk5vY3h2gwmEhzFyjuWOi7Cd6AFMrLUivA6ziPhgegnBsKoBO85pYqsXoW9oEqY2ZKrZQfMBONYUXrRtaHyTuKYS0esEUSNPhB16Uz4oHOgMOgMUAwCDBjStODB8',
       },
       body: jsonEncode(
         <String, dynamic>{

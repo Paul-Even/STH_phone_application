@@ -44,43 +44,44 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDabGB17bMklCqYF1g1U1cTq2NjDN3dYC8',
-    appId: '1:221023005778:web:36b9f56ad50e4d9535438b',
-    messagingSenderId: '221023005778',
-    projectId: 'sth-app',
-    authDomain: 'sth-app.firebaseapp.com',
-    databaseURL: 'https://sth-app-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'sth-app.appspot.com',
+    apiKey: 'AIzaSyBAC0SXBCaZwecwoIs7FzXjz3NwKl5FtQM',
+    appId: '1:226366120654:web:d9e07237c9d2f51d5fa69f',
+    messagingSenderId: '226366120654',
+    projectId: 'hera-shirt',
+    authDomain: 'hera-shirt.firebaseapp.com',
+    databaseURL: 'https://hera-shirt-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'hera-shirt.appspot.com',
+    measurementId: 'G-HZFCMXP20P',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBDjgf_Ts_qXNBN6w-7bJZPGYbAF9X7wG8',
-    appId: '1:221023005778:android:061e6826dd77976735438b',
-    messagingSenderId: '221023005778',
-    projectId: 'sth-app',
-    databaseURL: 'https://sth-app-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'sth-app.appspot.com',
+    apiKey: 'AIzaSyB9YneQJmxYveKCe8tZeLjlZhd6MkNW5Sk',
+    appId: '1:226366120654:android:8a3cca5ccc3ee51c5fa69f',
+    messagingSenderId: '226366120654',
+    projectId: 'hera-shirt',
+    databaseURL: 'https://hera-shirt-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'hera-shirt.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD0qTJUyTGD9RArDBd8GoPMjRs7edSYvZc',
-    appId: '1:221023005778:ios:db35fefd0aea169d35438b',
-    messagingSenderId: '221023005778',
-    projectId: 'sth-app',
-    databaseURL: 'https://sth-app-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'sth-app.appspot.com',
-    iosClientId: '221023005778-j1kcsrst9v9unh7qda0t1n5kc2uotuna.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDTKTQKQ5NNNpYVoEwyG-BcMwjhQray3r0',
+    appId: '1:226366120654:ios:e2676aa21ac2b0cc5fa69f',
+    messagingSenderId: '226366120654',
+    projectId: 'hera-shirt',
+    databaseURL: 'https://hera-shirt-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'hera-shirt.appspot.com',
+    iosClientId: '226366120654-nbkkn38oif71d0s9es7jp775oojtd65l.apps.googleusercontent.com',
     iosBundleId: 'com.example.sthApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD0qTJUyTGD9RArDBd8GoPMjRs7edSYvZc',
-    appId: '1:221023005778:ios:db35fefd0aea169d35438b',
-    messagingSenderId: '221023005778',
-    projectId: 'sth-app',
-    databaseURL: 'https://sth-app-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'sth-app.appspot.com',
-    iosClientId: '221023005778-j1kcsrst9v9unh7qda0t1n5kc2uotuna.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDTKTQKQ5NNNpYVoEwyG-BcMwjhQray3r0',
+    appId: '1:226366120654:ios:e2676aa21ac2b0cc5fa69f',
+    messagingSenderId: '226366120654',
+    projectId: 'hera-shirt',
+    databaseURL: 'https://hera-shirt-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'hera-shirt.appspot.com',
+    iosClientId: '226366120654-nbkkn38oif71d0s9es7jp775oojtd65l.apps.googleusercontent.com',
     iosBundleId: 'com.example.sthApp',
   );
 }

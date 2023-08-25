@@ -15,6 +15,8 @@ class ConnectionMenu extends StatefulWidget {
 class _ConnectionMenuState extends State<ConnectionMenu> {
   DatabaseReference ref = FirebaseDatabase.instance
       .ref("members"); //Gets the database "members" node's adress
+  DatabaseReference ref2 = FirebaseDatabase.instance
+      .ref("shirts"); //Gets the database "members" node's adress
   String username = "";
   final controller1 =
       TextEditingController(); //Creates a text controller for each of the two text zones
@@ -102,6 +104,14 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                 onPressed: () async {
                   debugPrint(controller1.text);
                   try {
+                    await ref2.child("HeRaShirt1").set({
+                      //Creates a new member in the database
+
+                      "team": "Smart Textiles Hub",
+                      "bpm": 0,
+                      "latitude": 0,
+                      "longitude": 0,
+                    });
                     if (controller1.text != "") {
                       //Checks if there is a username
                       final username = await ref

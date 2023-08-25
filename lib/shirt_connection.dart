@@ -15,7 +15,7 @@ class ShirtMenu extends StatefulWidget {
 
 class _ShirtMenuState extends State<ShirtMenu> {
   DatabaseReference ref = FirebaseDatabase.instance
-      .ref("shirt"); //Gets the database "members" node's adress
+      .ref("shirts"); //Gets the database "members" node's adress
   String team = "";
   final controller1 =
       TextEditingController(); //Creates a text controller for each of the two text zones
@@ -87,45 +87,42 @@ class _ShirtMenuState extends State<ShirtMenu> {
                   try {
                     if (controller1.text != "") {
                       //Checks if there is a username
-                      final username = await ref
-                          .child(controller1.text)
-                          .get(); //Gets the username from the database
-                      if (username.exists) {
-                        //Checks if the username exists
-                        final teamname = await ref
-                            .child("${controller1.text}/team")
-                            .get(); //Gets the password from the database
+                      debugPrint("c1 non nul");
+                      final shirts = await ref
+                          .get(); //Gets the shirt names from the database
+                      debugPrint("ahahaha + ${shirts.children}");
+                      for (DataSnapshot key in shirts.children) {
+                        print("for");
+                        if (key.key.toString() == controller1.text) {
+                          //Checks if the username exists
+                          print(key.key.toString());
+                          final teamname = await ref
+                              .child("${controller1.text}/team")
+                              .get(); //Gets the password from the database
 
-                        //Checks if the retrieved password corresponds
-                        if (teamname.value.toString() == team) {
-                          showDialog(
-                            //Sends the user back to the main page after a popup validation message
-                            context: context,
-                            builder: (context) => const AlertDialog(
-                                title: Text(
-                                    'You have succesfully connected to your account. Click to go back to the main page.')),
-                          ).then((value) async {
-                            Navigator.pop(context, [
-                              //Gives useful information back to the main page
-                              controller1.text
-                            ]);
-                          });
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) => const AlertDialog(
-                                title: Text(
-                                    'You might have entered a wrong name. Please try again.')),
-                          );
+                          //Checks if the retrieved password corresponds
+                          if (teamname.value.toString() == team) {
+                            showDialog(
+                              //Sends the user back to the main page after a popup validation message
+                              context: context,
+                              builder: (context) => const AlertDialog(
+                                  title: Text(
+                                      'You have succesfully connected to your shirt. Click to go back to the main page.')),
+                            ).then((value) async {
+                              Navigator.pop(context, [
+                                //Gives useful information back to the main page
+                                controller1.text
+                              ]);
+                            });
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const AlertDialog(
+                                  title: Text(
+                                      'You might have entered a wrong name. Please try again.')),
+                            );
+                          }
                         }
-                      } else {
-                        //If the username doesn't exist, shows a popup message
-                        showDialog(
-                          context: context,
-                          builder: (context) => const AlertDialog(
-                              title: Text(
-                                  'You might have entered a wrong name. Please try again.')),
-                        );
                       }
                     } else {
                       //If no username was given, shows a popup message

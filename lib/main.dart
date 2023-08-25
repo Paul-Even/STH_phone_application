@@ -24,6 +24,7 @@ import 'shirt_connection.dart';
 void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); //Linking the application to the Firebase database & messaging services
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -113,7 +114,7 @@ class _MainPageState extends State<MainPage> {
 
   DatabaseReference ref = FirebaseDatabase.instance
       .ref("members"); //Gets the database "members" node's adress
-  DatabaseReference ref_shirts = FirebaseDatabase.instance.ref("shirt");
+  DatabaseReference ref_shirts = FirebaseDatabase.instance.ref("shirts");
 
   String username = ""; //Value to display the user's name
   String teamname = ""; //Value to display the user's team's name
@@ -275,8 +276,9 @@ class _MainPageState extends State<MainPage> {
               await ref.get(); //Getting the list of members' names
           List<String> admins = [];
           String token = "";
-
+          debugPrint("Ici yah zbi : ${usernames.children.length}");
           for (DataSnapshot key in usernames.children) {
+            debugPrint("Ici yah zbi : ${key.key.toString()}");
             var team;
             await ref
                 .child("/${key.key.toString()}")
@@ -294,9 +296,11 @@ class _MainPageState extends State<MainPage> {
             }
           }
           for (String admin in admins) {
+            debugPrint("Ici yah zbi : ${admin}");
             //Sends a notification to every admin on the member's team
             DataSnapshot snapshot = await ref.child(admin).child("token").get();
             token = snapshot.value.toString();
+            debugPrint("Ici yah zbi : ${token}");
             sendPushMessage(
                 token, "$username has sent you an alert.", "Alert!");
           }
