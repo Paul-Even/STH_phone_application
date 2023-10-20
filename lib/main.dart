@@ -206,7 +206,7 @@ class _MainPageState extends State<MainPage> {
     if (shirt_co == true) {
       ref_shirts
           .child(shirtname)
-          .child("Latitude")
+          .child("latitude")
           .onValue
           .listen((event) async {
         double latitude = double.parse(event.snapshot.value.toString());
@@ -219,7 +219,7 @@ class _MainPageState extends State<MainPage> {
     if (shirt_co == true) {
       ref_shirts
           .child(shirtname)
-          .child("Longitude")
+          .child("longitude")
           .onValue
           .listen((event) async {
         double longitude = double.parse(event.snapshot.value.toString());

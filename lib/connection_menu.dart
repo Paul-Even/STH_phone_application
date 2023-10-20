@@ -122,7 +122,8 @@ class _ConnectionMenuState extends State<ConnectionMenu> {
                         final password = await ref
                             .child("${controller1.text}/password")
                             .get(); //Gets the password from the database
-                        if (password.value.toString() == controller2.text) {
+                        if (password.value.toString() ==
+                            controller2.text.toString()) {
                           //Checks if the retrieved password corresponds
                           await FirebaseMessaging
                               .instance //Gets the device token
